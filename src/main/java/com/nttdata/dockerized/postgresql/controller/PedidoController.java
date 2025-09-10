@@ -1,9 +1,10 @@
 package com.nttdata.dockerized.postgresql.controller;
 
+import com.nttdata.dockerized.postgresql.exception.ResourceNotFoundException;
 import com.nttdata.dockerized.postgresql.model.dto.*;
 import com.nttdata.dockerized.postgresql.service.PedidoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,11 +26,14 @@ public class PedidoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PedidoDto> getPedidoById(@PathVariable final Long id) {
+    public PedidoDto getPedidoById(@PathVariable final Long id) {
         return pedidoService.findById(id)
                 .map(INSTANCE::map)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "No se encontró el pedido con ID: " + id,
+                    "Pedido",
+                    id
+                ));
     }
 
     // Pedidos de un cliente
@@ -63,26 +67,27 @@ public class PedidoController {
     }
 
     @PostMapping
-    public PedidoSaveResponseDto crearPedido(@RequestBody final PedidoSaveRequestDto pedidoSaveRequestDto) {
+    public PedidoSaveResponseDto crearPedido(@Valid @RequestBody final PedidoSaveRequestDto pedidoSaveRequestDto) {
         return INSTANCE.toPedidoSaveResponseDto(
                 pedidoService.crearPedido(pedidoSaveRequestDto)
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoDto> update(@PathVariable final Long id, 
-                                           @RequestBody final PedidoUpdateRequestDto pedidoUpdateRequestDto) {
+    public PedidoDto update(@PathVariable final Long id, 
+                           @Valid @RequestBody final PedidoUpdateRequestDto pedidoUpdateRequestDto) {
         return pedidoService.update(id, INSTANCE.toEntity(pedidoUpdateRequestDto))
                 .map(INSTANCE::map)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "No se encontró el pedido con ID: " + id,
+                    "Pedido",
+                    id
+                ));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        return pedidoService.deleteById(id) 
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+    public void delete(@PathVariable final Long id) {
+        pedidoService.deleteById(id);
     }
 
 }
