@@ -1,9 +1,10 @@
 package com.nttdata.dockerized.postgresql.controller;
 
+import com.nttdata.dockerized.postgresql.exception.ResourceNotFoundException;
 import com.nttdata.dockerized.postgresql.model.dto.*;
 import com.nttdata.dockerized.postgresql.service.ProductoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -26,11 +27,14 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoDto> getProductoById(@PathVariable final Long id) {
+    public ProductoDto getProductoById(@PathVariable final Long id) {
         return productoService.findById(id)
                 .map(INSTANCE::map)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "No se encontró el producto con ID: " + id,
+                    "Producto",
+                    id
+                ));
     }
 
     @GetMapping("/categoria/{categoriaId}")
@@ -50,35 +54,39 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ProductoSaveResponseDto save(@RequestBody final ProductoSaveRequestDto productoSaveRequestDto) {
+    public ProductoSaveResponseDto save(@Valid @RequestBody final ProductoSaveRequestDto productoSaveRequestDto) {
         return INSTANCE.toProductoSaveResponseDto(
                 productoService.save(INSTANCE.toEntity(productoSaveRequestDto), productoSaveRequestDto.getCategoriaId())
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductoSaveResponseDto> update(@PathVariable final Long id, 
-                                                         @RequestBody final ProductoUpdateRequestDto productoUpdateRequestDto) {
+    public ProductoSaveResponseDto update(@PathVariable final Long id, 
+                                         @Valid @RequestBody final ProductoUpdateRequestDto productoUpdateRequestDto) {
         return productoService.update(id, INSTANCE.toEntity(productoUpdateRequestDto), productoUpdateRequestDto.getCategoriaId())
                 .map(INSTANCE::toProductoSaveResponseDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "No se encontró el producto con ID: " + id,
+                    "Producto",
+                    id
+                ));
     }
 
     @PutMapping("/{productoId}/categoria/{categoriaId}")
-    public ResponseEntity<ProductoDto> asignarCategoria(
+    public ProductoDto asignarCategoria(
             @PathVariable final Long productoId,
             @PathVariable final Long categoriaId) {
         return productoService.asignarCategoria(productoId, categoriaId)
                 .map(INSTANCE::map)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "No se encontró el producto con ID: " + productoId + " o la categoría con ID: " + categoriaId,
+                    "Producto",
+                    productoId
+                ));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        return productoService.deleteById(id) 
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+    public void delete(@PathVariable final Long id) {
+        productoService.deleteById(id);
     }
 }
