@@ -1,0 +1,52 @@
+services:
+  pedido-microservice:
+    build: ./microservices/pedido-microservice
+    container_name: pedido-microservice
+    ports:
+      - "8081:8080"
+    environment:
+      DATABASE_URL: jdbc:postgresql://pedido_db:5432/pedido_db
+      DATABASE_USERNAME: pedido_user
+      DATABASE_PASSWORD: pedido_pass
+    depends_on:
+      - pedido_db
+
+  producto-microservice:
+    build: ./microservices/producto-microservice
+    container_name: producto-microservice
+    ports:
+      - "8082:8080"
+    environment:
+      DATABASE_URL: jdbc:postgresql://producto_db:5432/producto_db
+      DATABASE_USERNAME: producto_user
+      DATABASE_PASSWORD: producto_pass
+    depends_on:
+      - producto_db
+
+  pedido_db:
+    image: postgres:15
+    container_name: pedido_db
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: pedido_user
+      POSTGRES_PASSWORD: pedido_pass
+      POSTGRES_DB: pedido_db
+    volumes:
+      - pedido_data:/var/lib/postgresql/data
+
+  producto_db:
+    image: postgres:15
+    container_name: producto_db
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: producto_user
+      POSTGRES_PASSWORD: producto_pass
+      POSTGRES_DB: producto_db
+    volumes:
+      - producto_data:/var/lib/postgresql/data
+
+volumes:
+  pedido_data:
+  producto_data:
