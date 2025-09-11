@@ -1,18 +1,37 @@
 package com.nttdata.dockerized.postgresql.client;
 
 import com.nttdata.dockerized.postgresql.model.dto.PedidoDto;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-@FeignClient(name = "pedido-ms", url = "http://localhost:8082")
-public interface PedidoClient {
+@Service
+public class PedidoClient {
 
-    @GetMapping("/api/pedidos")
-    List<PedidoDto> getAllPedidos();
+    @Autowired
+    private RestTemplate restTemplate;
 
-    @GetMapping("/api/pedidos/{id}")
-    PedidoDto getPedidoById(@PathVariable("id") Long id);
+    private static final String PEDIDO_MS_URL = "http://localhost:8082";
+
+    public List<PedidoDto> getAllPedidos() {
+        ResponseEntity<List<PedidoDto>> response = restTemplate.exchange(
+            PEDIDO_MS_URL + "/api/pedidos",
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<PedidoDto>>() {}
+        );
+        return response.getBody();
+    }
+
+    public PedidoDto getPedidoById(Long id) {
+        return restTemplate.getForObject(
+            PEDIDO_MS_URL + "/api/pedidos/" + id,
+            PedidoDto.class
+        );
+    }
 }
