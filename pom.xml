@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.nttdata</groupId>
+    <groupId>com.tareams</groupId>
     <artifactId>microservices</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -11,6 +11,7 @@
     <modules>
         <module>microservices/pedido-microservice</module>
         <module>microservices/producto-microservice</module>
+        <module>microservices/composition-pedido</module>
     </modules>
 
     <properties>

@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>com.tareams</groupId>
-    <artifactId>pedido-microservice</artifactId>
+    <artifactId>composition-pedido</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>pedido-microservice</name>
-    <description>Demo project for Spring Boot</description>
+    <name>composition-pedido</name>
+    <description>Microservicio de composición para pedidos</description>
 
     <properties>
         <java.version>21</java.version>
@@ -26,22 +26,17 @@
         <!-- Spring Boot básicos -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
 
-        <!-- PostgreSQL -->
+        <!-- Feign Client -->
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
         <!-- Lombok -->
@@ -58,10 +53,10 @@
             <version>${org.mapstruct.version}</version>
         </dependency>
 
-        <!-- Feign Client -->
+        <!-- Jackson para JSON -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
 
         <!-- Testing -->
@@ -77,7 +72,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>2023.0.3</version> <!-- Compatible con Boot 3.3.x -->
+                <version>2023.0.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

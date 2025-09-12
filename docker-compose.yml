@@ -23,6 +23,18 @@ services:
     depends_on:
       - producto_db
 
+  composition-pedido:
+    build: ./microservices/composition-pedido
+    container_name: composition-pedido
+    ports:
+      - "8083:8083"
+    environment:
+      MICROSERVICES_PEDIDO_URL: http://pedido-microservice:8080
+      MICROSERVICES_PRODUCTO_URL: http://producto-microservice:8080
+    depends_on:
+      - pedido-microservice
+      - producto-microservice
+
   pedido_db:
     image: postgres:15
     container_name: pedido_db
